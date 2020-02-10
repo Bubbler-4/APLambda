@@ -44,9 +44,25 @@
                 </div>
               </div>
             </div>
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-primary">Run</button>
-              <button type="button" class="btn btn-info">Permalink</button>
+            <div class="btn-toolbar mb-3" role="toolbar">
+              <div class="btn-group mr-2" role="group">
+                <button type="button" class="btn btn-primary" id="aplambdaRun">Run</button>
+                <button type="button" class="btn btn-info" id="aplambdaPerm">Permalink</button>
+              </div>
+              <div class="input-group">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="aplambdaPerm" id="aplambdaPerm1" value="perm1" checked>
+                  <label class="form-check-label" for="aplambdaPerm1">Plain (WIP)</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="aplambdaPerm" id="aplambdaPerm2" value="perm2">
+                  <label class="form-check-label" for="aplambdaPerm2">StackExchange (WIP)</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="aplambdaPerm" id="aplambdaPerm3" value="perm3">
+                  <label class="form-check-label" for="aplambdaPerm3">TopAnswers (WIP)</label>
+                </div>
+              </div>
             </div>
             <hr>
             <div class="form-group">
@@ -68,5 +84,6 @@
         </div>
       </div>
     </div>
+    <script src="aplambda_bundle.min.js"></script>
   </body>
 </html>
