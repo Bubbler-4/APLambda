@@ -2,8 +2,71 @@
 <html>
   <head>
     <title>Try APLambda Online!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/maxwell-k/dejavu-sans-mono-web-font@2.37/index.css" crossorigin="anonymous">
+    <style>
+      code, textarea {
+        font-family: 'DejaVu Sans Mono', monospace;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   </head>
   <body>
-    Placeholder text
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h2>Try APLambda Online!</h2>
+        </div>
+      </div>
+      <div class="row-100"></div>
+      <div class="row">
+        <div class="col-8">
+          <!--
+          <h4>Placeholder for code section</h4>
+          <pre><code>Sample code {⌈⌿+\∘.=⍨1⊥10⊥⍣¯1⍳20×⍵}⍳+∘1</code></pre>
+          -->
+          <form>
+            <div class="form-group">
+              <label for="aplambdaCode">Code</label>
+              <textarea class="form-control" id="aplambdaCode" rows="5" spellcheck="false" autocapitalize="none" autocorrect="off" placeholder="Code goes here..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="aplambdaInput">Input</label>
+              <textarea class="form-control" id="aplambdaInput" rows="5" spellcheck="false" autocapitalize="none" autocorrect="off" placeholder="Input goes here..."></textarea>
+            </div>
+            <div class="btn-toolbar mb-3" role="toolbar">
+              <div class="input-group">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="aplambdaOption1" value="option1" disabled>
+                  <label class="form-check-label" for="aplambdaOption1">Options (WIP)</label>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-primary">Run</button>
+              <button type="button" class="btn btn-info">Permalink</button>
+            </div>
+            <hr>
+            <div class="form-group">
+              <label for="aplambdaOutput">Output</label>
+              <textarea class="form-control" id="aplambdaOutput" rows="5" spellcheck="false" autocapitalize="none" autocorrect="off" readonly placeholder="Output will appear here..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="aplambdaDebug">Debug</label>
+              <textarea class="form-control" id="aplambdaDebug" rows="5" spellcheck="false" autocapitalize="none" autocorrect="off" readonly placeholder="Debug information will appear here..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="aplambdaPermalink">Permalink</label>
+              <textarea class="form-control" id="aplambdaPermalink" rows="2" spellcheck="false" autocapitalize="none" autocorrect="off" readonly placeholder="Permalink will appear here..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="col-4">
+          <h4>Placeholder for help section</h4>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
