@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import Parser from './aplambda_parser';
 
 const aplambdaCode = $('#aplambdaCode');
 const aplambdaInput = $('#aplambdaInput');
@@ -6,22 +7,41 @@ const aplambdaOutput = $('#aplambdaOutput');
 const aplambdaDebug = $('#aplambdaDebug');
 const aplambdaRun = $('#aplambdaRun');
 
+function textareaExtend() {
+  const thisEl = $(this);
+  const newlines = thisEl.val().match(/\n/g).length;
+  thisEl.attr('rows', Math.min(newlines + 1, 20));
+}
+aplambdaCode.on('input', textareaExtend);
+aplambdaInput.on('input', textareaExtend);
+
 function run() {
   // Test: copy Code to Output
-  aplambdaOutput.val(aplambdaCode.val());
+  const code = aplambdaCode.val();
+  aplambdaOutput.val(code);
+  // Test: generate a parse tree of the code
+  const parsed = Parser.Parser.parse(code);
+  if (parsed.status) {
+    aplambdaDebug.val(JSON.stringify(parsed.value, null, 2));
+  } else {
+    aplambdaDebug.val(JSON.stringify(parsed, null, 2));
+  }
+  textareaExtend.call(aplambdaOutput);
+  textareaExtend.call(aplambdaDebug);
 }
+aplambdaRun.click(run);
 
 // Mapping for backslash + name combo, triggered at <tab>
 const keymap = {
-  '\\L': '\u039b', // capital lambda
-  '\\l': '\u03bb', // small lambda
-  '\\a': '\u03b1', // small alpha
-  '\\w': '\u03c9', // small omega
-  '\\-': '\u00af', // macron aka high minus
-  '\\<>': '\u22c4', // diamond, statement separator
+  '\\L': 'Λ',
+  '\\l': 'λ',
+  '\\a': 'α',
+  '\\w': 'ω',
+  '\\-': '¯',
+  '\\<>': '⋄',
 };
 
-function key(e) {
+function handleTabCombo(e) {
   if (e.which === 9) { // If the key is tab...
     // If the cursor is right after backslash + name combo, replace it with matching symbol
     // Insert literal tab otherwise
@@ -45,6 +65,5 @@ function key(e) {
   return true;
 }
 
-aplambdaRun.click(run);
-aplambdaCode.keydown(key);
-aplambdaInput.keydown(key);
+aplambdaCode.keydown(handleTabCombo);
+aplambdaInput.keydown(handleTabCombo);

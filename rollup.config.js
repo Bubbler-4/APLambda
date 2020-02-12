@@ -1,10 +1,11 @@
 export default {
-  external: ['jquery'],
+  external: ['jquery', 'parsimmon'],
   output: {
     format: 'iife',
     name: 'bundle',
     globals: {
-      jquery: '$'
+      jquery: '$',
+      parsimmon: 'Parsimmon'
     }
   }
 };
