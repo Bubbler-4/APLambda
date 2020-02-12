@@ -17,6 +17,8 @@ const keymap = {
   '\\l': '\u03bb', // small lambda
   '\\a': '\u03b1', // small alpha
   '\\w': '\u03c9', // small omega
+  '\\-': '\u00af', // macron aka high minus
+  '\\<>': '\u22c4', // diamond, statement separator
 };
 
 function key(e) {
