@@ -9,7 +9,7 @@ const aplambdaRun = $('#aplambdaRun');
 
 function textareaExtend() {
   const thisEl = $(this);
-  const newlines = thisEl.val().match(/\n/g).length;
+  const newlines = (thisEl.val().match(/\n/g) || []).length;
   thisEl.attr('rows', Math.min(newlines + 1, 20));
 }
 aplambdaCode.on('input', textareaExtend);
