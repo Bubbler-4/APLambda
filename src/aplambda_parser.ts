@@ -1,8 +1,8 @@
-import Parsimmon from 'parsimmon';
+import P from 'parsimmon';
 
-const P = Parsimmon;
+// const P = Parsimmon;
 
-const wrapType = (type) => (value) => ({ type, value });
+const wrapType = (type : any) => (value : any) => ({ type, value });
 
 const aplambdaParser = P.createLanguage({
   main: (L) => L.stmt.sepBy(L.stmt_sep),

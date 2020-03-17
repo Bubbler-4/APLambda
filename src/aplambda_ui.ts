@@ -31,29 +31,28 @@ function run() {
 }
 aplambdaRun.click(run);
 
-// Mapping for backslash + name combo, triggered at <tab>
-const keymap = {
-  '\\L': 'Λ',
-  '\\l': 'λ',
-  '\\a': 'α',
-  '\\w': 'ω',
-  '\\-': '¯',
-  '\\<>': '⋄',
-};
+// Mapping for two-char<tab> combo
+const keymap = new Map<string, string>();
+[
+  ['GL', 'Λ'],
+  ['gl', 'λ'],
+  ['ga', 'α'],
+  ['gw', 'ω'],
+  ['--', '¯'],
+  ['<>', '⋄'],
+].forEach(([key, value]) => keymap.set(key, value));
 
-function handleTabCombo(e) {
+function handleTabCombo(e : any) {
   if (e.which === 9) { // If the key is tab...
-    // If the cursor is right after backslash + name combo, replace it with matching symbol
+    // If the cursor is right after two-char combo, replace it with matching symbol
     // Insert literal tab otherwise
     const target = $(e.target);
     const text = target.val() as string;
     const cursor = e.target.selectionStart;
-    const backslashIdx = text.slice(0, cursor).lastIndexOf('\\');
-    const replaceFrom = text.slice(backslashIdx, cursor);
-    const replaceTo = keymap[replaceFrom];
-    if (backslashIdx >= 0 && replaceTo) {
-      target.val(text.slice(0, backslashIdx) + replaceTo + text.slice(cursor));
-      const newCursorPos = cursor - (replaceFrom.length - replaceTo.length);
+    const replaceFrom = text.slice(0, cursor).slice(-2);
+    if (keymap.has(replaceFrom)) {
+      target.val(text.slice(0, cursor - 2) + keymap.get(replaceFrom) + text.slice(cursor));
+      const newCursorPos = cursor - 1;
       e.target.setSelectionRange(newCursorPos, newCursorPos);
     } else {
       target.val(`${text.slice(0, cursor)}\t${text.slice(cursor)}`);
