@@ -9,7 +9,7 @@ const aplambdaRun = $('#aplambdaRun');
 
 function textareaExtend() {
   const thisEl = $(this);
-  const newlines = (thisEl.val().match(/\n/g) || []).length;
+  const newlines = ((thisEl.val() as string).match(/\n/g) || []).length;
   thisEl.attr('rows', Math.min(newlines + 1, 20));
 }
 aplambdaCode.on('input', textareaExtend);
@@ -17,7 +17,7 @@ aplambdaInput.on('input', textareaExtend);
 
 function run() {
   // Test: copy Code to Output
-  const code = aplambdaCode.val();
+  const code = aplambdaCode.val() as string;
   aplambdaOutput.val(code);
   // Test: generate a parse tree of the code
   const parsed = Parser.Parser.parse(code);
@@ -46,7 +46,7 @@ function handleTabCombo(e) {
     // If the cursor is right after backslash + name combo, replace it with matching symbol
     // Insert literal tab otherwise
     const target = $(e.target);
-    const text = target.val();
+    const text = target.val() as string;
     const cursor = e.target.selectionStart;
     const backslashIdx = text.slice(0, cursor).lastIndexOf('\\');
     const replaceFrom = text.slice(backslashIdx, cursor);
