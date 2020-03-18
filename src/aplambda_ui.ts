@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Parser from './aplambda_parser';
+import Parser from './aplambda';
 
 const aplambdaCode = $('#aplambdaCode');
 const aplambdaInput = $('#aplambdaInput');
