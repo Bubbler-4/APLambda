@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Parser from './aplambda';
+import { evalAPL } from './aplambda';
 
 const aplambdaCode = $('#aplambdaCode');
 const aplambdaInput = $('#aplambdaInput');
@@ -16,15 +16,14 @@ aplambdaCode.on('input', textareaExtend);
 aplambdaInput.on('input', textareaExtend);
 
 function run() {
-  // Test: copy Code to Output
   const code = aplambdaCode.val() as string;
-  aplambdaOutput.val(code);
-  // Test: generate a parse tree of the code
-  const parsed = Parser.Parser.parse(code);
-  if (parsed.status) {
-    aplambdaDebug.val(JSON.stringify(parsed.value, null, 2));
+  const parsed = evalAPL(code);
+  if (parsed.success === true) {
+    aplambdaOutput.val(parsed.value);
+    aplambdaDebug.val('');
   } else {
-    aplambdaDebug.val(JSON.stringify(parsed, null, 2));
+    aplambdaOutput.val('');
+    aplambdaDebug.val(parsed.error);
   }
   textareaExtend.call(aplambdaOutput);
   textareaExtend.call(aplambdaDebug);
