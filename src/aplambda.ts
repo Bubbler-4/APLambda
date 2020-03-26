@@ -163,17 +163,50 @@ export function evalExpr(expr : ExprNode, context : Context) : APLResult {
   return y;
 }
 
-export const builtins : IdentMap = new Map().set('+', Value2((x, y, context) => {
-  if (x.arity === 0 && y.arity === 0) {
-    return pure(ValueNContext(Value0(x.value + y.value), context));
-  }
-  return fail(FailureInfo('Function "+" takes only nilads for both arguments'));
-})).set('~', Value1((y, context) => {
-  if (y.arity === 0) {
-    return pure(ValueNContext(Value0(-y.value), context));
-  }
-  return fail(FailureInfo('Function "~" takes only a nilad for its right argument'));
-}));
+/* Builtins
+(Notation: x, y = nilad, x1, y1 = monad, x2, y2 = dyad)
+x + y -> Addition
+x - y -> Subtraction
+~ y -> Unary negation
+Flip y2 -> Flip two args to y2
+x1 Comp y2 -> x1 (x y2 y)
+*/
+
+export const builtins : IdentMap = new Map()
+  .set('+', Value2((x, y, context) => {
+    if (x.arity === 0 && y.arity === 0) {
+      return pure(ValueNContext(Value0(x.value + y.value), context));
+    }
+    return fail(FailureInfo('Function "+" takes only nilads for both arguments'));
+  }))
+  .set('-', Value2((x, y, context) => {
+    if (x.arity === 0 && y.arity === 0) {
+      return pure(ValueNContext(Value0(x.value - y.value), context));
+    }
+    return fail(FailureInfo('Function "-" takes only nilads for both arguments'));
+  }))
+  .set('~', Value1((y, context) => {
+    if (y.arity === 0) {
+      return pure(ValueNContext(Value0(-y.value), context));
+    }
+    return fail(FailureInfo('Function "~" takes only a nilad for its right argument'));
+  }))
+  .set('Flip', Value1((y2, context) => {
+    if (y2.arity === 2) {
+      return pure(ValueNContext(Value2((x, y, ctx) => y2.value(y, x, ctx)), context));
+    }
+    return fail(FailureInfo('function "Flip" takes only a dyad for its right argument'));
+  }))
+  .set('Comp', Value2((x2, y2, context) => {
+    if (x2.arity === 1 && y2.arity === 2) {
+      const composed = (x : Value, y : Value, ctx : Context) => {
+        const y2Result : APLResult = y2.value(x, y, ctx);
+        return chainVNC(y2Result, x2.value);
+      };
+      return pure(ValueNContext(Value2(composed), context));
+    }
+    return fail(FailureInfo('invalid arity for function "Comp"'));
+  }));
 
 export const builtinContext : Context = { identmap: builtins };
 

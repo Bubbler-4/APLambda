@@ -12,7 +12,7 @@ So I came up with an idea:
 
 > I imagine, if we get away from the current "tacit" programs and the parsing rule dedicated to operators, and mark every (possibly higher-level) function as either monadic or dyadic, we could have a functional language that supports basic APL syntax.
 
-## Planned features
+## Concept
 
 * Based on the APL language.
 * No distinction between functions and operators (and higher-order functions).
@@ -24,4 +24,19 @@ So I came up with an idea:
 * Jelly-like tacit programming.
 * Typed variant?
 
-Currently, [this HackMD page](https://hackmd.io/@Bubbler/BkbHYIUZU) contains an outline of language features and a list of design decisions. Most of them are subject to change.
+## Curent features
+
+### v0.1.0
+
+* Minimal interpreter is ready. Currently, it only accepts a single line of expression. No dfns, no assignment yet.
+* Includes a minimal set of built-in data types, tokens, and primitives.
+  * Data type: Every nilad is a single integer.
+  * Token: One or more digits are recognized as a number literal; an alphanumeric sequence is recognized as an identifier (plus a small set of symbols).
+  * Primitives
+    * `+` (binary add), `-` (binary sub), `~` (unary minus)
+    * `Flip` (`⍨` on dyad), `Comp` (atop)
+
+Even without dfns, we can do more than traditional APL:
+
+* `Flip` and `Comp` can take *any* monads and dyads, which are not restricted to traditional functions.
+  * `1(~(Flip Comp Comp)-)2` evaluates to `1(Flip ~ Comp -)2`, which is `~ 2 - 1` or `¯1`.
