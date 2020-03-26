@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { evalAPL } from './aplambda';
+import { execAPL } from './aplambda';
 
 const aplambdaCode = $('#aplambdaCode');
 const aplambdaInput = $('#aplambdaInput');
@@ -17,13 +17,13 @@ aplambdaInput.on('input', textareaExtend);
 
 function run() {
   const code = aplambdaCode.val() as string;
-  const parsed = evalAPL(code);
+  const parsed = execAPL(code);
   if (parsed.success === true) {
     aplambdaOutput.val(parsed.value);
     aplambdaDebug.val('');
   } else {
-    aplambdaOutput.val('');
-    aplambdaDebug.val(parsed.error);
+    aplambdaOutput.val(parsed.error[0]);
+    aplambdaDebug.val(parsed.error[1]);
   }
   textareaExtend.call(aplambdaOutput);
   textareaExtend.call(aplambdaDebug);

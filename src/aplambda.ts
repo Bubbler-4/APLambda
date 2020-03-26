@@ -1,6 +1,4 @@
-import P, {
-  optWhitespace as _,
-} from 'parsimmon';
+import P from 'parsimmon';
 
 /* Grammar
 Expr := Value+
@@ -13,12 +11,15 @@ Value :=
 type Ident = string;
 
 namespace T {
+  export const _ : P.Parser<undefined> = P.oneOf(' \t').many().result(undefined);
+  export const N : P.Parser<undefined> = P.string('\n').trim(_).atLeast(1).result(undefined);
   export const LParen : P.Parser<undefined> = P.string('(').trim(_).result(undefined);
   export const RParen : P.Parser<undefined> = P.string(')').trim(_).result(undefined);
   export const Ident : P.Parser<string> = P.regexp(/[_a-z][_a-z0-9]*|[+*~-]/i).trim(_);
   export const Num : P.Parser<number> = P.regexp(/[0-9]+/).map(Number).trim(_);
 }
 
+type ProgNode = ExprNode[];
 type ExprNode = ValueNode[];
 type ValueNodeParen = { nodetype : 'paren', child : ExprNode };
 type ValueNodeIdent = { nodetype : 'ident', child : Ident };
@@ -26,6 +27,7 @@ type ValueNodeNum = { nodetype : 'num', child : number };
 type ValueNode = ValueNodeParen | ValueNodeIdent | ValueNodeNum;
 
 type APLRule = {
+  prog : ProgNode;
   expr : ExprNode;
   paren : ValueNodeParen;
   ident : ValueNodeIdent;
@@ -34,6 +36,7 @@ type APLRule = {
 };
 
 const APLLanguage : P.TypedLanguage<APLRule> = P.createLanguage<APLRule>({
+  prog: (L) => L.expr.sepBy(T.N).trim(P.optWhitespace),
   expr: (L) => L.value.atLeast(1),
   paren: (L) => L.expr.wrap(T.LParen, T.RParen).map((e : ExprNode) => ({ nodetype: 'paren', child: e })),
   ident: () => T.Ident.map((s : Ident) => ({ nodetype: 'ident', child: s })),
@@ -41,7 +44,7 @@ const APLLanguage : P.TypedLanguage<APLRule> = P.createLanguage<APLRule>({
   value: (L) => P.alt(L.paren, L.ident, L.num),
 });
 
-export const parseAPL = (s : string) => APLLanguage.expr.tryParse(s);
+export const parseAPL = (s : string) => APLLanguage.prog.tryParse(s);
 
 type Value0 = { arity : 0, value : number };
 const Value0 : (n : Value0['value']) => Value0 = (n) => ({ arity: 0, value: n });
@@ -163,6 +166,34 @@ export function evalExpr(expr : ExprNode, context : Context) : APLResult {
   return y;
 }
 
+type ProgSuccess = { values: Value[] };
+function ProgSuccess(values : Value[]) : ProgSuccess {
+  return { values };
+}
+type ProgFailure = { values: Value[], msg: string };
+function ProgFailure(values : Value[], msg : string) : ProgFailure {
+  return { values, msg };
+}
+type ProgResult = Result<ProgFailure, ProgSuccess>;
+
+function execProg(prog : ProgNode, context : Context) : ProgResult {
+  let currentContext = context;
+  let result : ProgResult = pure(ProgSuccess([]));
+  prog.forEach((expr) => {
+    result = chain(result, (lastSuccess) => {
+      const exprResult = evalExpr(expr, currentContext);
+      if (exprResult.success === false) {
+        return fail(ProgFailure(lastSuccess.values, exprResult.error.message));
+      }
+      const { values } = lastSuccess;
+      values.push(exprResult.value.value);
+      currentContext = exprResult.value.context;
+      return pure(ProgSuccess(values));
+    });
+  });
+  return result;
+}
+
 /* Builtins
 (Notation: x, y = nilad, x1, y1 = monad, x2, y2 = dyad)
 x + y -> Addition
@@ -227,4 +258,14 @@ export function evalAPL(s : string) : Result<string, string> {
     ? pure(parsed.value) : fail(FailureInfo('Syntax error'));
   const result = chain(ast, (expr) => evalExpr(expr, builtinContext));
   return bimap(result, (f1) => f1.message, (s1) => format(s1.value));
+}
+
+export function execAPL(s : string) : Result<[string, string], string> {
+  const parsed = APLLanguage.prog.parse(s);
+  const ast : Result<ProgFailure, ProgNode> = parsed.status === true
+    ? pure(parsed.value) : fail(ProgFailure([], 'Syntax error'));
+  const result = chain(ast, (prog) => execProg(prog, builtinContext));
+  return bimap(result,
+    (f1) => [f1.values.map(format).join('\n'), f1.msg],
+    (s1) => s1.values.map(format).join('\n'));
 }

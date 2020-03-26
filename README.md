@@ -26,6 +26,10 @@ So I came up with an idea:
 
 ## Curent features
 
+### v0.1.1
+
+* Now allows multiple lines of expressions.
+
 ### v0.1.0
 
 * Minimal interpreter is ready. Currently, it only accepts a single line of expression. No dfns, no assignment yet.
