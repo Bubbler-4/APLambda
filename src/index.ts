@@ -39,6 +39,7 @@ const keymap = new Map<string, string>();
   ['gw', 'ω'],
   ['--', '¯'],
   ['<>', '⋄'],
+  ['<-', '←'],
 ].forEach(([key, value]) => keymap.set(key, value));
 
 function handleTabCombo(e : any) {

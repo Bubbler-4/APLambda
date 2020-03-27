@@ -4,6 +4,7 @@ import P from 'parsimmon';
 Expr := Value+
 Value :=
 `LParen` Expr `RParen`
+| `Ident` `Assign` Expr
 | `Ident`
 | `Num`
 */
@@ -15,6 +16,7 @@ namespace T {
   export const N : P.Parser<undefined> = P.string('\n').trim(_).atLeast(1).result(undefined);
   export const LParen : P.Parser<undefined> = P.string('(').trim(_).result(undefined);
   export const RParen : P.Parser<undefined> = P.string(')').trim(_).result(undefined);
+  export const LArrow : P.Parser<undefined> = P.string('←').trim(_).result(undefined);
   export const Ident : P.Parser<string> = P.regexp(/[_a-z][_a-z0-9]*|[+*~-]/i).trim(_);
   export const Num : P.Parser<number> = P.regexp(/[0-9]+/).map(Number).trim(_);
 }
@@ -22,14 +24,16 @@ namespace T {
 type ProgNode = ExprNode[];
 type ExprNode = ValueNode[];
 type ValueNodeParen = { nodetype : 'paren', child : ExprNode };
+type ValueNodeAssign = { nodetype : 'assign', ident : Ident, child : ExprNode };
 type ValueNodeIdent = { nodetype : 'ident', child : Ident };
 type ValueNodeNum = { nodetype : 'num', child : number };
-type ValueNode = ValueNodeParen | ValueNodeIdent | ValueNodeNum;
+type ValueNode = ValueNodeParen | ValueNodeAssign | ValueNodeIdent | ValueNodeNum;
 
 type APLRule = {
   prog : ProgNode;
   expr : ExprNode;
   paren : ValueNodeParen;
+  assign : ValueNodeAssign;
   ident : ValueNodeIdent;
   num : ValueNodeNum;
   value : ValueNode;
@@ -39,9 +43,11 @@ const APLLanguage : P.TypedLanguage<APLRule> = P.createLanguage<APLRule>({
   prog: (L) => L.expr.sepBy(T.N).trim(P.optWhitespace),
   expr: (L) => L.value.atLeast(1),
   paren: (L) => L.expr.wrap(T.LParen, T.RParen).map((e : ExprNode) => ({ nodetype: 'paren', child: e })),
+  assign: (L) => P.seqMap(L.ident, T.LArrow, L.expr,
+    (id, _, expr) => ({ nodetype: 'assign', ident: id.child, child: expr })),
   ident: () => T.Ident.map((s : Ident) => ({ nodetype: 'ident', child: s })),
   num: () => T.Num.map((n : number) => ({ nodetype: 'num', child: n })),
-  value: (L) => P.alt(L.paren, L.ident, L.num),
+  value: (L) => P.alt(L.paren, L.assign, L.ident, L.num),
 });
 
 export const parseAPL = (s : string) => APLLanguage.prog.tryParse(s);
@@ -133,9 +139,18 @@ function evalParen(node : ValueNodeParen, context : Context) : APLResult {
   return evalExpr(node.child, context);
 }
 
+function evalAssign(node : ValueNodeAssign, context : Context) : APLResult {
+  const { ident, child } = node;
+  return chainVNC(evalExpr(child, context), (value, context2) => {
+    const newIdentMap = new Map(context2.identmap).set(ident, value);
+    return pure(ValueNContext(value, Context(newIdentMap)));
+  });
+}
+
 function evalValue(node : ValueNode, context : Context) : APLResult {
   if (node.nodetype === 'ident') return evalIdent(node, context);
   if (node.nodetype === 'num') return evalNum(node, context);
+  if (node.nodetype === 'assign') return evalAssign(node, context);
   return evalParen(node, context);
 }
 

@@ -26,6 +26,12 @@ So I came up with an idea:
 
 ## Curent features
 
+### v0.1.2
+
+* Now allows assignments with the syntax `ident←expr`, which can be embedded anywhere in a larger expression.
+  * Online interpreter: The symbol `←` can be entered with `<-[tab]`.
+  * Shy result is not implemented yet.
+
 ### v0.1.1
 
 * Now allows multiple lines of expressions.
