@@ -6,7 +6,7 @@
   "dependencies": {
     "@types/jquery": "^3.3.33",
     "@types/parsimmon": "^1.10.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "parsimmon": "^1.13.0"
   },
   "devDependencies": {
