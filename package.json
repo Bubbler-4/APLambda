@@ -17,7 +17,7 @@
     "eslint-config-airbnb-typescript": "^7.0.0",
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
-    "parcel": "^1.12.4",
+    "parcel": "^2.8.2",
     "ts-jest": "^25.2.1",
     "typescript": "^3.8.3"
   },
